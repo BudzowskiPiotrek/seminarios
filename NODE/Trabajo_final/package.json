@@ -1,0 +1,22 @@
+{
+  "name": "seminario",
+  "version": "1.0.0",
+  "description": "Seminario Diego Pablo",
+  "license": "ISC",
+  "author": "elMago",
+  "type": "commonjs",
+  "main": "Server.js",
+  "scripts": {
+    "start": "node **Server.js**",
+    "dev": "nodemon **Server.js**"
+  },
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

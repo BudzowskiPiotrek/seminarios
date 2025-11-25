@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Empleados</title>
+</head>
+<body>
+    <h2>Registro de Nuevo Empleado</h2>
+    
+    <form id="formEmpleado">
+        <label for="nombre">Nombre:</label><br>
+        <input type="text" id="nombre" name="nombre" maxlength="50" required><br><br>
+
+        <label for="rol">Rol/Puesto:</label><br>
+        <select id="rol" name="rol" required>
+            <option value="">-- Selecciona un rol --</option>
+            <option value="User">User</option>
+            <option value="Admin">Admin</option>
+            <option value="Developer">Developer</option>
+        </select><br><br>
+
+        <button type="submit">Registrar Empleado</button>
+    </form>
+
+    <h2>Lista de Empleados</h2>
+    <table border ="5" id="tablaEmpleados">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Rol</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
