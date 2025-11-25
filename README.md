@@ -10,10 +10,10 @@ El contenido está organizado por la tecnología principal de cada seminario:
 
 | Carpeta | Tecnología/Tema | Contenido Típico |
 | :--- | :--- | :--- |
-| **FRUTTER** | Desarrollo de aplicaciones móviles con Flutter. | Código fuente de ejercicios, demos y presentaciones relacionadas con Flutter y Dart. |
 | **NODE** | Programación Backend con Node.js. | Ejemplos de servidores, APIs REST, módulos de Node.js y material de estudio. |
 | **POWERSHELL** | Automatización de tareas y scripting con PowerShell. | Scripts de ejemplo, guías de comandos y soluciones de automatización. |
 | **SPRING** | Desarrollo de aplicaciones empresariales con Spring (Java). | Proyectos de ejemplo de Spring Boot, Spring Data, y otros módulos del ecosistema Spring. |
+| **FRUTTER** | Desarrollo de aplicaciones móviles con Flutter. | Código fuente de ejercicios, demos y presentaciones relacionadas con Flutter y Dart. |
 
 ## 🛠 Tecnologías Cubiertas
 
