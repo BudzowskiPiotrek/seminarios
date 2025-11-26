@@ -1,4 +1,4 @@
-# 📚 Seminarios de Colegio San Jose
+# 📚 Material Formacion Tecnologica
 
 ## 📝 Descripción del Proyecto
 
