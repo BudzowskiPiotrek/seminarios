@@ -62,6 +62,38 @@ class ClikerPage extends StatelessWidget {
 
                   // --- Panel de Mejoras ---
                   const Text(
+                    'Mejora del Click',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const Divider(),
+
+                  Text('Nivel Actual: ${provider.clickUpgradeLevel}'),
+                  Text(
+                    'Multiplicador: x${provider.clickMultiplicador.toStringAsFixed(2)}',
+                  ),
+                  Text('Costo: ${provider.sigCosteMejoraClick} PapuPuntos'),
+
+                  const SizedBox(height: 10),
+
+                  ElevatedButton(
+                    onPressed: provider.puntos >= provider.sigCosteMejoraClick
+                        ? provider.compraMejoraClick
+                        : null,
+                    child: Text(
+                      'Comprar Mejora Click (Nivel ${provider.clickUpgradeLevel + 1})',
+                    ),
+                  ),
+
+                  if (provider.puntos < provider.sigCosteMejoraClick)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        'Puntos insuficientes para comprar.',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+
+                  const Text(
                     'Mejoras Automáticas',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),

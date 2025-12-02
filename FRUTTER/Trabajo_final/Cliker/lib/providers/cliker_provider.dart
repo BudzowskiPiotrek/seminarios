@@ -6,135 +6,168 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ClikerProvider extends ChangeNotifier {
   double _puntuacion = 0.0;
   int _nivelMejora = 0;
+  int _nivelMejoraClick = 0;
+  int _ultimoCierre = DateTime.now().millisecondsSinceEpoch;
+  double _multiClick = 1.0;
   double _puntosPorSegundo = 0.0;
-  final double _valorBaseClick = 1.0;
-  final double _multiplicadorBonus = 1.0;
-  final int _costoBaseMejora = 10;
-  int _ultimoCierreTimestamp = DateTime.now().millisecondsSinceEpoch;
 
-  String _mensajeOffline = '';
+  final double _valorBaseClick = 1.0;
+  final double _multiBonus = 1.0;
+  final int _costoBaseMejora = 10;
+
+
+  String _mensaje = '';
   Timer? _temporizador;
 
+
+  final int _costoBaseMejoraClick = 15;
+
+
+  // Getters
   double get puntos => _puntuacion;
-
   int get upgradeLevel => _nivelMejora;
-
   double get puntosPorSegundo => _puntosPorSegundo;
 
-  double get clickValor => _valorBaseClick * _multiplicadorBonus;
 
-  int get sigCosteMejora => (_costoBaseMejora * pow(1.5, _nivelMejora)).round();
+  double get clickValor =>
+      _valorBaseClick * _multiBonus * _multiClick;
 
-  String get offlineMensaje => _mensajeOffline;
+  int get sigCosteMejora =>
+      (_costoBaseMejora * pow(1.5, _nivelMejora)).round();
+
+  String get offlineMensaje => _mensaje;
+
+
+  int get clickUpgradeLevel => _nivelMejoraClick;
+
+  double get clickMultiplicador => _multiClick;
+
+  int get sigCosteMejoraClick =>
+      (_costoBaseMejoraClick * pow(1.6, _nivelMejoraClick)).round();
 
   ClikerProvider() {
-    _iniciarDatos();
+    _iniciar();
   }
 
-  //--------------------------------------------------**//----------------
-  Future<void> _iniciarDatos() async {
-    await _cargarDatos(); // Carga los datos guardados
-    _iniciarGeneracionAuto(); // Inicia el temporizador
-    notifyListeners(); // Actualiza la UI con los datos cargados/calculados
+  // Inicio
+  Future<void> _iniciar() async {
+    await _cargar();
+    _iniciarAuto();
+    notifyListeners();
   }
 
-  // MÉTODOS DE GUARDADO Y CARGA DE DATOS
-  //--------------------------------------------------**//----------------
-  Future<void> _guardarDatos() async {
+  // Guardar datos
+  Future<void> _guarda() async {
     final preferencias = await SharedPreferences.getInstance();
-
     preferencias.setDouble('puntuacion', _puntuacion);
     preferencias.setInt('nivelMejora', _nivelMejora);
-    _ultimoCierreTimestamp = DateTime.now().millisecondsSinceEpoch;
-    preferencias.setInt('ultimoCierreTiempo', _ultimoCierreTimestamp);
+    preferencias.setInt(
+        'ultimoCierreTiempo', DateTime.now().millisecondsSinceEpoch);
+
+    preferencias.setInt('nivelMejoraClick', _nivelMejoraClick);
+    preferencias.setDouble(
+        'multiplicadorClickExtra', _multiClick);
   }
 
-  Future<void> _cargarDatos() async {
+  // Cargar datos
+  Future<void> _cargar() async {
     final preferencias = await SharedPreferences.getInstance();
-
     _puntuacion = preferencias.getDouble('puntuacion') ?? 0.0;
     _nivelMejora = preferencias.getInt('nivelMejora') ?? 0;
-    _ultimoCierreTimestamp =
-        preferencias.getInt('ultimoCierreTiempo') ??
+    _ultimoCierre = preferencias.getInt('ultimoCierreTiempo') ??
         DateTime.now().millisecondsSinceEpoch;
-    _recalcularEstadisticas();
-    _calcularGananciasOffline();
+    _nivelMejoraClick = preferencias.getInt('nivelMejoraClick') ?? 0;
+    _multiClick =
+        preferencias.getDouble('multiplicadorClickExtra') ?? 1.0;
+    _recalcular();
+    _calcularCuandoNoEstas();
   }
 
-  // METODO QUE CALCULA LAS GANANCIAS CUANDO NO ESTAS
-  //--------------------------------------------------**//----------------
-  void _calcularGananciasOffline() {
+  // Ganancias offline
+  void _calcularCuandoNoEstas() {
     final tiempoActual = DateTime.now().millisecondsSinceEpoch;
-    final tiempoDiferenciaMs = tiempoActual - _ultimoCierreTimestamp;
+    final tiempoDiferenciaMs = tiempoActual - _ultimoCierre;
     final tiempoDiferenciaSegundos = tiempoDiferenciaMs / 1000;
 
     if (_puntosPorSegundo > 0 && tiempoDiferenciaSegundos > 5) {
       final puntosGanados = _puntosPorSegundo * tiempoDiferenciaSegundos;
       _puntuacion += puntosGanados;
-      _mensajeOffline =
-          '¡Ganaste ${puntosGanados.toStringAsFixed(2)} puntos offline (${tiempoDiferenciaSegundos.round()}s)!';
-      _guardarDatos();
+      _mensaje =
+      '¡Ganaste ${puntosGanados.toStringAsFixed(2)} puntos offline (${tiempoDiferenciaSegundos.round()}s)!';
+      _guarda();
     } else {
-      _mensajeOffline = '';
+      _mensaje = '';
     }
   }
 
-  // --- Lógica de Juego ---
-  //--------------------------------------------------**//----------------
-  void _recalcularEstadisticas() {
+  // Recalcular PPS
+  void _recalcular() {
     _puntosPorSegundo =
-        _nivelMejora * (_valorBaseClick * _multiplicadorBonus) * 0.5;
+        _nivelMejora * (_valorBaseClick * _multiBonus) * 0.5;
   }
 
+  // Click
   void click() {
     _puntuacion += clickValor;
-    _guardarDatos();
+    _guarda();
     notifyListeners();
   }
 
+  // Compra de mejoras
   void compraMejora() {
     final costo = sigCosteMejora;
+
     if (_puntuacion >= costo) {
       _puntuacion -= costo;
       _nivelMejora++;
-      _recalcularEstadisticas();
-      _guardarDatos();
+      _recalcular();
+      _guarda();
       notifyListeners();
-    } else {
-
-      print('Puntos insuficientes');
     }
   }
 
-  // Inicia el temporizador para la generación automática de puntos
-  void _iniciarGeneracionAuto() {
+  // Compra de mejoras del CLIC
+  void compraMejoraClick() {
+    final costo = sigCosteMejoraClick;
+    if (_puntuacion >= costo) {
+      _puntuacion -= costo;
+      _nivelMejoraClick++;
+      _multiClick = 1 + (_multiClick * 1.10);
+
+      _guarda();
+      notifyListeners();
+    }
+  }
+
+  // Generación automática
+  void _iniciarAuto() {
     _temporizador?.cancel();
-    // Añade puntos 10 veces por segundo para una actualización fluida en la UI
     _temporizador = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       if (_puntosPorSegundo > 0) {
         _puntuacion += _puntosPorSegundo / 10;
-        // Solo notificamos cambios, evitamos guardar en cada tick para optimizar
         notifyListeners();
       }
     });
   }
 
-  // 4. Reinicio
+  // Reinicio
   void resetGame() {
     _puntuacion = 0.0;
     _nivelMejora = 0;
     _puntosPorSegundo = 0.0;
-    _mensajeOffline = 'Juego reiniciado.';
-    _ultimoCierreTimestamp = DateTime.now().millisecondsSinceEpoch;
-    _recalcularEstadisticas();
-    _guardarDatos(); // Guardar el estado de reinicio
+    _mensaje = 'Juego reiniciado.';
+    _nivelMejoraClick = 0;
+    _multiClick = 1.0;
+    _ultimoCierre = DateTime.now().millisecondsSinceEpoch;
+    _recalcular();
+    _guarda();
     notifyListeners();
   }
 
   @override
   void dispose() {
     _temporizador?.cancel();
-    _guardarDatos(); // Guardar el último estado antes de que se destruya el proveedor
+    _guarda();
     super.dispose();
   }
 }
