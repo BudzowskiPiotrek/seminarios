@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Lista de Tareas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <ion-item>
+    <ion-input placeholder="Escribe una tarea" [(ngModel)]="nuevaTarea">
+    </ion-input>
+
+    <ion-button slot="end" (click)="agregarTarea()">
+      Agregar
+    </ion-button>
+  </ion-item>
+
+  <ion-list>
+    <ion-item *ngFor="let tarea of tareas; let i = index">
+
+      <ion-checkbox slot="start" [(ngModel)]="tarea.completada">
+      </ion-checkbox>
+
+      <ion-label [class.tarea-completa]="tarea.completada">
+        {{ tarea.texto }}
+      </ion-label>
+
+      <ion-button color="danger" fill="outline" slot="end" (click)="eliminarTarea(i)">
+        Eliminar
+      </ion-button>
+
+    </ion-item>
+  </ion-list>
+
+</ion-content>
