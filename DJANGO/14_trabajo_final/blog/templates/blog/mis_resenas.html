@@ -1,0 +1,35 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+<h1>Mis Reseñas</h1>
+<a href="{% url 'crear_resena' %}" class="btn">Nueva Reseña</a>
+<table>
+    <thead>
+        <tr>
+            <th>Película</th>
+            <th>Valoración</th>
+            <th>Fecha Visualización</th>
+            <th>Comentario</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for resena in resenas %}
+        <tr>
+            <td>{{ resena.pelicula.titulo }}</td>
+            <td>{{ resena.valoracion }}</td>
+            <td>{{ resena.fecha_visualizacion }}</td>
+            <td>{{ resena.comentario }}</td>
+            <td>
+                <a href="{% url 'borrar_resena' resena.id %}"
+                    onclick="return confirm('¿Borrar esta reseña?');">Borrar</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No has escrito reseñas aún.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
